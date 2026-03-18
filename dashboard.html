@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الطبيب - الحاضنة الذكية</title>
+    
+    <script>
+        if (sessionStorage.getItem("AuthStatus") !== "Logged_In") {
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <style>
+        /* التصميم المظلم والطبي */
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* الشريط العلوي */
+        .top-bar {
+            background-color: #1e293b;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #00f2fe;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .top-bar h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #00f2fe;
+        }
+
+        .logout-btn {
+            background-color: #ef4444; /* لون أحمر لتسجيل الخروج */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #dc2626;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        /* تخطيط الصفحة (قسمين: قراءة وتحكم) */
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        /* قسم القراءات الحالية */
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .stat-card {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 4px solid #00f2fe;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+
+        /* قسم التحكم بالأجهزة */
+        .control-section {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-section h3 {
+            margin-top: 0;
+            color: #00f2fe;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            font-weight: bold;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #10b981; /* لون أخضر للحفظ */
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            background-color: #059669;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        #notification {
+            color: #10b981;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h2>⚙️ لوحة تحكم الطبيب</h2>
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج 🚪</button>
+    </div>
+
+    <div class="dashboard-container">
+        
+        <div class="stats-section">
+            <div class="stat-card">
+                <h3>الحرارة الحالية 🌡️</h3>
+                <div class="stat-value" id="current-temp">-- °C</div>
+            </div>
+            <div class="stat-card">
+                <h3>الرطوبة الحالية 💧</h3>
+                <div class="stat-value" id="current-hum">-- %</div>
+            </div>
+            <div class="stat-card" style="border-right-color: #f59e0b;">
+                <h3>حالة السرير 🛏️</h3>
+                <div class="stat-value" id="current-status" style="font-size: 20px;">جاري الفحص...</div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h3>🎛️ إعدادات الحاضنة</h3>
+            
+            <div class="control-group">
+                <label>الدرجة المستهدفة للحرارة (°C):</label>
+                <input type="number" id="target-temp" step="0.5" placeholder="مثال: 37.0">
+            </div>
+
+            <div class="control-group">
+                <label>مستوى الإضاءة (%): <span id="light-val-display">--</span></label>
+                <input type="range" id="light-level" min="0" max="100" value="0" oninput="updateSliderValue(this.value)">
+            </div>
+
+            <button class="save-btn" onclick="saveSettings()">إرسال الأوامر للحاضنة 📡</button>
+            <div id="notification">✅ تم إرسال الأوامر بنجاح!</div>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // ⚠️ إعدادات قاعدة البيانات الخاصة بك
+        const firebaseConfig = {
+            databaseURL: "https://realtimedatabase-9952b-default-rtdb.firebaseio.com/" 
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. قراءة البيانات اللحظية للمستشعرات
+        db.ref("/Incubator/Current").on("value", (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                document.getElementById("current-temp").innerText = data.Temp + " °C";
+                document.getElementById("current-hum").innerText = data.Hum + " %";
+                
+                let statusEl = document.getElementById("current-status");
+                if(data.Status === "BUSY") {
+                    statusEl.innerText = "الطفل موجود";
+                    statusEl.style.color = "#10b981";
+                } else {
+                    statusEl.innerText = "السرير فارغ";
+                    statusEl.style.color = "#ef4444";
+                }
+            }
+        });
+
+        // 2. جلب الإعدادات الحالية من السيرفر لوضعها في الحقول
+        db.ref("/Incubator/Settings").once("value", (snapshot) => {
+            const settings = snapshot.val();
+            if(settings) {
+                document.getElementById("target-temp").value = settings.targetTemp;
+                document.getElementById("light-level").value = settings.lightLevel;
+                document.getElementById("light-val-display").innerText = settings.lightLevel + "%";
+            }
+        });
+
+        // 3. تحديث رقم شريط الإضاءة عند سحبه
+        function updateSliderValue(val) {
+            document.getElementById("light-val-display").innerText = val + "%";
+        }
+
+        // 4. إرسال الأوامر الجديدة إلى Firebase (والتي سيستقبلها الأردوينو فوراً)
+        function saveSettings() {
+            let t_temp = parseFloat(document.getElementById("target-temp").value);
+            let l_level = parseInt(document.getElementById("light-level").value);
+
+            // التحقق من صحة الأرقام
+            if(isNaN(t_temp)) {
+                alert("الرجاء إدخال درجة حرارة صحيحة!");
+                return;
+            }
+
+            db.ref("/Incubator/Settings").update({
+                targetTemp: t_temp,
+                lightLevel: l_level
+            }).then(() => {
+                // إظهار رسالة النجاح لثانيتين
+                let notif = document.getElementById("notification");
+                notif.style.display = "block";
+                setTimeout(() => { notif.style.display = "none"; }, 2000);
+            });
+        }
+
+        // 5. دالة تسجيل الخروج
+        function logout() {
+            // مسح مفتاح الدخول
+            sessionStorage.removeItem("AuthStatus");
+            // العودة للصفحة الرئيسية (الزوار)
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
