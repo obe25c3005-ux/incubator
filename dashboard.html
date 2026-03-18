@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الطبيب - الحاضنة الذكية</title>
+    <title> Doctor Dashboard - Smart Incubator</title>
     
     <script>
         if (sessionStorage.getItem("AuthStatus") !== "Logged_In") {
@@ -173,42 +173,42 @@
 <body>
 
     <div class="top-bar">
-        <h2>⚙️ لوحة تحكم الطبيب</h2>
-        <button class="logout-btn" onclick="logout()">تسجيل الخروج 🚪</button>
+        <h2>⚙️ Doctor Dashboard </h2>
+        <button class="logout-btn" onclick="logout()">Log Out 🚪</button>
     </div>
 
     <div class="dashboard-container">
         
         <div class="stats-section">
             <div class="stat-card">
-                <h3>الحرارة الحالية 🌡️</h3>
+                <h3> Current temperature🌡️</h3>
                 <div class="stat-value" id="current-temp">-- °C</div>
             </div>
             <div class="stat-card">
-                <h3>الرطوبة الحالية 💧</h3>
+                <h3>Current humidity 💧</h3>
                 <div class="stat-value" id="current-hum">-- %</div>
             </div>
             <div class="stat-card" style="border-right-color: #f59e0b;">
-                <h3>حالة السرير 🛏️</h3>
+                <h3>Bed State 🛏️</h3>
                 <div class="stat-value" id="current-status" style="font-size: 20px;">جاري الفحص...</div>
             </div>
         </div>
 
         <div class="control-section">
-            <h3>🎛️ إعدادات الحاضنة</h3>
+            <h3>🎛️ Incubator Settings </h3>
             
             <div class="control-group">
-                <label>الدرجة المستهدفة للحرارة (°C):</label>
+                <label>Target temperature (°C):</label>
                 <input type="number" id="target-temp" step="0.5" placeholder="مثال: 37.0">
             </div>
 
             <div class="control-group">
-                <label>مستوى الإضاءة (%): <span id="light-val-display">--</span></label>
+                <label>Light level (%): <span id="light-val-display">--</span></label>
                 <input type="range" id="light-level" min="0" max="100" value="0" oninput="updateSliderValue(this.value)">
             </div>
 
-            <button class="save-btn" onclick="saveSettings()">إرسال الأوامر للحاضنة 📡</button>
-            <div id="notification">✅ تم إرسال الأوامر بنجاح!</div>
+            <button class="save-btn" onclick="saveSettings()">Sending Commands to Incubator📡</button>
+            <div id="notification">✅The orders have been sent successfully!</div>
         </div>
 
     </div>
@@ -234,10 +234,10 @@
                 
                 let statusEl = document.getElementById("current-status");
                 if(data.Status === "BUSY") {
-                    statusEl.innerText = "الطفل موجود";
+                    statusEl.innerText = "Child Exist";
                     statusEl.style.color = "#10b981";
                 } else {
-                    statusEl.innerText = "السرير فارغ";
+                    statusEl.innerText = "The Bed is empty";
                     statusEl.style.color = "#ef4444";
                 }
             }
@@ -265,7 +265,7 @@
 
             // التحقق من صحة الأرقام
             if(isNaN(t_temp)) {
-                alert("الرجاء إدخال درجة حرارة صحيحة!");
+                alert("Please enter a valid temperature!");
                 return;
             }
 
