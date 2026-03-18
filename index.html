@@ -1,246 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Baby Incubator</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    <title>Smart Incubator monitoring For visitors</title>
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --accent-cyan: #22d3ee;
-            --accent-orange: #fb923c;
-            --accent-green: #4ade80;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-        }
-
+        /* التصميم المظلم والطبي */
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            padding: 0;
         }
 
-        .dashboard {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        header {
-            text-align: left;
-            padding: 10px 0;
-            border-bottom: 1px solid #334155;
-        }
-
-        header h1 { font-size: 1.5rem; margin: 0; letter-spacing: 1px; color: var(--accent-cyan); }
-        header p { font-size: 0.8rem; color: var(--text-dim); margin: 5px 0 0 0; }
-
-        /* Status Bar */
-        .status-bar {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
+        /* الشريط العلوي */
+        .top-bar {
+            background-color: #1e293b;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid var(--accent-green);
+            border-bottom: 3px solid #00f2fe;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .badge {
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
+        .top-bar h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #e2e8f0;
         }
 
-        .pulse {
-            width: 10px;
-            height: 10px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            box-shadow: 0 0 8px var(--accent-green);
-            animation: blink 1.5s infinite;
-        }
-
-        /* Metric Cards */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-        }
-
-        .temp-card::after { background: var(--accent-orange); }
-        .hum-card::after { background: var(--accent-cyan); }
-
-        .card-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-        .card-value { font-size: 2.2rem; font-weight: 600; margin: 10px 0; }
-
-        /* Tuner Section */
-        .tuner-section {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 20px;
-        }
-
-        .tuner-title { font-size: 1rem; margin-bottom: 20px; color: var(--text-dim); border-bottom: 1px solid #334155; padding-bottom: 10px; }
-
-        .control-group { margin-bottom: 25px; }
-        .control-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-        
-        input[type=range] {
-            width: 100%;
-            -webkit-appearance: none;
-            background: #334155;
-            height: 6px;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px; height: 18px;
-            background: var(--accent-cyan);
-            border-radius: 50%;
+        .login-btn {
+            background-color: #334155;
+            color: #00f2fe;
+            border: 1px solid #00f2fe;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 0 10px var(--accent-cyan);
-        }
-
-        .apply-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #06b6d4, #3b82f6);
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
             transition: 0.3s;
         }
 
-        .apply-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .login-btn:hover {
+            background-color: #00f2fe;
+            color: #0f172a;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
 
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        /* حاوية الكروت */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            padding: 50px 20px;
+        }
 
+        /* تصميم كروت البيانات */
+        .card {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            width: 260px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .value {
+            font-size: 45px;
+            font-weight: bold;
+            color: #00f2fe;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #475569; /* لون افتراضي قبل التحميل */
+            color: white;
+            transition: 0.3s;
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <header>
-        <h1>RealTime MONITOR</h1>
-        <p>Medical Grade Infant Supervision System</p>
-    </header>
-
-    <div class="status-bar">
-        <span><span class="pulse"></span>SYSTEM STATUS</span>
-        <span id="status-text" class="badge" style="color: var(--accent-green);">STANDBY</span>
+    <div class="top-bar">
+        <h2>👶 Incubator Monitoring (Read Only )</h2>
+        <button class="login-btn" onclick="window.location.href='login.html'">Manager Login 🔒</button>
     </div>
 
-    <div class="metrics-grid">
-        <div class="card temp-card">
-            <div class="card-label">Temperature</div>
-            <div id="currTemp" class="card-value">--°</div>
-            <div style="font-size: 0.7rem; color: var(--accent-orange);">Celsius Scale</div>
+    <div class="container">
+        <div class="card">
+            <h3>Temperature  🌡️</h3>
+            <div class="value" id="temp-val">-- °C</div>
         </div>
-        <div class="card hum-card">
-            <div class="card-label">Humidity</div>
-            <div id="currHum" class="card-value">--%</div>
-            <div style="font-size: 0.7rem; color: var(--accent-cyan);">Rel. Humidity</div>
-        </div>
-    </div>
-
-    <div class="tuner-section">
-        <div class="tuner-title"><i class="fas fa-sliders-h"></i> PHYSICIAN SETTINGS</div>
         
-        <div class="control-group">
-            <div class="control-header">
-                <span>Target Temperature</span>
-                <span id="targetTempLabel" style="color: var(--accent-orange);">37.0°C</span>
-            </div>
-            <input type="range" min="35" max="39" step="0.1" value="37" id="tempRange">
+        <div class="card">
+            <h3>Humidity 💧</h3>
+            <div class="value" id="hum-val">-- %</div>
         </div>
-
-        <div class="control-group">
-            <div class="control-header">
-                <span>Light Intensity</span>
-                <span id="lightLevelLabel" style="color: var(--accent-cyan);">30%</span>
-            </div>
-            <input type="range" min="0" max="100" value="30" id="lightRange">
+        
+        <div class="card">
+            <h3>Bed State 🛏️</h3>
+            <div class="status-badge" id="status-val">جاري الاتصال...</div>
         </div>
-
-        <button class="apply-btn" onclick="updateMedicalSettings()">APPLY CONFIGURATION</button>
     </div>
-</div>
 
-<script>
-    // Firebase Setup
-    const firebaseConfig = { databaseURL: "https://realtimedatabase-9952b-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    // UI Feedback for Sliders
-    const tRange = document.getElementById('tempRange');
-    const lRange = document.getElementById('lightRange');
-    
-    tRange.oninput = () => document.getElementById('targetTempLabel').innerText = tRange.value + "°C";
-    lRange.oninput = () => document.getElementById('lightLevelLabel').innerText = lRange.value + "%";
+    <script>
+        // إعدادات قاعدة البيانات الخاصة بك
+        const firebaseConfig = {
+            databaseURL: "https://realtimedatabase-9952b-default-rtdb.firebaseio.com/" 
+        };
+        
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    // Firebase Write
-    function updateMedicalSettings() {
-        const temp = parseFloat(tRange.value);
-        const light = parseInt(lRange.value);
-        db.ref('Incubator/Settings').set({ targetTemp: temp, lightLevel: light })
-          .then(() => alert("Medical Standards Updated Successfully"));
-    }
-
-    // Firebase Read (Real-time)
-    db.ref('Incubator/Current').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if(data) {
-            document.getElementById('currTemp').innerText = data.Temp + "°";
-            document.getElementById('currHum').innerText = data.Hum + "%";
+        // قراءة البيانات لحظياً من مسار /Incubator/Current
+        db.ref("/Incubator/Current").on("value", (snapshot) => {
+            const data = snapshot.val();
             
-            const statusEl = document.getElementById('status-text');
-            if(data.Status === "BUSY") {
-                statusEl.innerText = "PATIENT DETECTED";
-                statusEl.style.color = "#fb923c"; // Orange
-            } else {
-                statusEl.innerText = "EMPTY / READY";
-                statusEl.style.color = "#4ade80"; // Green
+            if(data) {
+                // تحديث الأرقام
+                document.getElementById("temp-val").innerText = data.Temp + " °C";
+                document.getElementById("hum-val").innerText = data.Hum + " %";
+                
+                // تحديث حالة السرير وتغيير اللون
+                let statusEl = document.getElementById("status-val");
+                if(data.Status === "BUSY") {
+                    statusEl.innerText = "Child Exist";
+                    statusEl.style.backgroundColor = "#10b981"; // لون أخضر مريح
+                    statusEl.style.boxShadow = "0 0 15px rgba(16, 185, 129, 0.4)";
+                } else {
+                    statusEl.innerText = "The Bed is Empty";
+                    statusEl.style.backgroundColor = "#ef4444"; // لون أحمر تنبيهي
+                    statusEl.style.boxShadow = "0 0 15px rgba(239, 68, 68, 0.4)";
+                }
             }
-        }
-    });
-</script>
-
+        });
+    </script>
 </body>
 </html>
